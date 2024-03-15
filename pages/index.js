@@ -1,5 +1,3 @@
-import { Container, Divider } from '@chakra-ui/react'
-import Header from "@/components/header";
 import dynamic from 'next/dynamic';
 
 const LayoutComponent = dynamic(() => import("@/components/layout"))

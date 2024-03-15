@@ -4,13 +4,18 @@ import { NextResponse } from 'next/server'
 export function middleware(request) {
   const { pathname } = request.nextUrl;
   const isCookiesExist = !!request.cookies.get('user_token')
-  const isLoginPage = pathname.startsWith('/login')
 
-  if (!isCookiesExist && !isLoginPage) {
+  const guestPages = [
+    '/login',
+    '/register'
+  ]
+  const isGuestPage = guestPages.some((page) => pathname.startsWith(page))
+
+  if (!isCookiesExist && !isGuestPage) {
     return NextResponse.redirect(new URL('/login', request.url))
   }
 
-  if (isCookiesExist && isLoginPage) {
+  if (isCookiesExist && isGuestPage) {
     return NextResponse.redirect(new URL('/', request.url))
   }
 }

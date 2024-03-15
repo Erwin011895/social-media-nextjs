@@ -1,7 +1,7 @@
 import { Menu, MenuButton, MenuItem, MenuList } from "@chakra-ui/menu"
 import Link from "next/link"
 import { ChevronDownIcon } from "@chakra-ui/icons"
-import { Button, Flex, Text } from "@chakra-ui/react";
+import { Button, Flex, Text, useToast } from "@chakra-ui/react";
 import Cookies from "js-cookie"
 import { useRouter } from "next/router"
 import { useContext } from "react"
@@ -12,6 +12,7 @@ export default function Header() {
   const router = useRouter()
   const userData = useContext(UserContext)
   const { mutate } = useMutations();
+  const toast = useToast()
 
   const HandleLogout = async () => {
     const response = await mutate({
@@ -23,6 +24,13 @@ export default function Header() {
     })
 
     if (!response?.success) {
+      toast({
+        title: "Logout gagal",
+        description: "",
+        status: "error",
+        duration: 2000,
+        isClosable: true,
+      })
       console.log('gagal logout', response)
     } else {
       Cookies.remove('user_token')
