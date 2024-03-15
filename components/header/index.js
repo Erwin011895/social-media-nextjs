@@ -1,7 +1,7 @@
 import { Menu, MenuButton, MenuItem, MenuList } from "@chakra-ui/menu"
 import Link from "next/link"
 import { ChevronDownIcon } from "@chakra-ui/icons"
-import { Button, Flex, Text, useToast } from "@chakra-ui/react";
+import { Avatar, Button, Flex, Text, useToast } from "@chakra-ui/react";
 import Cookies from "js-cookie"
 import { useRouter } from "next/router"
 import { useContext } from "react"
@@ -38,22 +38,29 @@ export default function Header() {
     }
   }
 
+  const HandleRoute = async (link) => {
+    router.push(link);
+  }
+
   return (
     <Flex width="full" justify="center" marginBottom='4px'>
       <Flex px="4" w="full" align="center" justify="space-between" maxW="1200px">
         <Link href="/">
-          <Text fontWeight='bold'>Social Media</Text>
+          <Text fontSize='1.5em' fontWeight='bold'>Social Media</Text>
         </Link>
 
         {userData && (
           <Menu>
             <MenuButton as={Button} rightIcon={<ChevronDownIcon />}>
-              {userData?.name}
+              <Avatar
+                size='sm'
+                name={userData?.name}
+              />
             </MenuButton>
             <MenuList>
+              <MenuItem onClick={() => HandleRoute('/profile')}>My Profile</MenuItem>
+              <MenuItem onClick={() => HandleRoute('/notifications')}>Notification</MenuItem>
               <MenuItem onClick={() => HandleLogout()}>Logout</MenuItem>
-              {/* <MenuItem onClick={() => HandleLogout()}>My Profile</MenuItem> */}
-              {/* <MenuItem onClick={() => HandleLogout()}>Notification</MenuItem> */}
             </MenuList>
           </Menu>
         )}

@@ -5,7 +5,13 @@ import { createContext } from "react";
 export const UserContext = createContext({});
 
 export function UserContextProvider({ children, ...props }) {
-  let userData = {};
+  let userData = {
+    name: '',
+    email: '',
+    dob: '',
+    phone: '',
+    hobby: '',
+  };
   if (!!Cookies.get('user_token')) {
     const { data } = useQueries({
       prefixUrl: "https://paace-f178cafcae7b.nevacloud.io/api/user/me",

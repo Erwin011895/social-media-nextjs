@@ -61,13 +61,7 @@ export default function Register() {
             <Input value={payload.password} onChange={(e) => setPayload({ ...payload, password: e.target.value })} placeholder="password" type='password' />
           </FormControl>
           <FormControl>
-            <Button onClick={HandleSubmit} colorScheme='blue' width='full'>Login</Button>
-          </FormControl>
-          <FormControl>
-            Don't have account? &nbsp;
-            <Link href="/register">
-              <Text as='span' fontWeight='bold'>Register Now</Text>
-            </Link>
+            <Button onClick={HandleSubmit} colorScheme='blue' width='full'>Register</Button>
           </FormControl>
         </Stack >
       </LayoutComponent>
