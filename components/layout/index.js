@@ -15,7 +15,7 @@ export default function Layout({ children, metaTitle, metaDescription }) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Container backgroundColor='#E2E8F0' maxWidth='full' minHeight='100vh'>
-        <Container maxW='xl' centerContent backgroundColor='#F7FAFC'>
+        <Container maxW='xl' centerContent backgroundColor='#F7FAFC' minHeight='100vh'>
           <Header />
           <Divider />
           {children}

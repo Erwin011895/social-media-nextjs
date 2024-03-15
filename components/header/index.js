@@ -6,10 +6,12 @@ import Cookies from "js-cookie"
 import { useRouter } from "next/router"
 import { useContext } from "react"
 import { UserContext } from "@/context/userContext"
+import { useMutations } from '@/hooks/useMutation';
 
 export default function Header() {
   const router = useRouter()
   const userData = useContext(UserContext)
+  const { mutate } = useMutations();
 
   const HandleLogout = async () => {
     const response = await mutate({
@@ -42,6 +44,8 @@ export default function Header() {
             </MenuButton>
             <MenuList>
               <MenuItem onClick={() => HandleLogout()}>Logout</MenuItem>
+              {/* <MenuItem onClick={() => HandleLogout()}>My Profile</MenuItem> */}
+              {/* <MenuItem onClick={() => HandleLogout()}>Notification</MenuItem> */}
             </MenuList>
           </Menu>
         )}
