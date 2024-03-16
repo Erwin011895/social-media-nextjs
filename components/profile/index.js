@@ -1,5 +1,5 @@
 import { UserContext } from "@/context/userContext";
-import { Card, CardBody, CardHeader, Container, Flex, Text } from "@chakra-ui/react";
+import { Avatar, Card, CardBody, CardHeader, Container, Flex, Text } from "@chakra-ui/react";
 import { useContext } from "react";
 
 
@@ -12,10 +12,11 @@ export default function ProfileBox({ userData = {} } = {}) {
     return (
         <Card width='full' mb="2">
             <CardHeader>
-                <Text align='center'>{initialName || ""}</Text>
-                <Text align='center'>{userData?.name}</Text>
+                <Flex align='center' flexDir='column'>
+                    <Avatar size='md' name={userData?.name} />
+                    <Text align='center'>{userData?.name}</Text>
+                </Flex>
             </CardHeader>
-
             <CardBody>
                 <Flex dir="row" justifyContent='space-between'>
                     <div>

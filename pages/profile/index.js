@@ -1,4 +1,5 @@
 import PostInput from '@/components/post-input';
+import Posts from '@/components/posts';
 import ProfileBox from '@/components/profile';
 import { UserContext } from '@/context/userContext';
 import dynamic from 'next/dynamic';
@@ -14,6 +15,7 @@ export default function Profile() {
       <LayoutComponent metaTitle="Profile">
         <ProfileBox userData={userData} />
         <PostInput />
+        <Posts type='me' />
       </LayoutComponent>
     </>
   );
