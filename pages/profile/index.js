@@ -15,7 +15,7 @@ export default function Profile() {
       <LayoutComponent metaTitle="Profile">
         <ProfileBox userData={userData} />
         <PostInput />
-        <Posts type='me' />
+        <Posts type='me' userId={userData?.id} />
       </LayoutComponent>
     </>
   );
