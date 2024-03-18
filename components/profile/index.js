@@ -1,14 +1,7 @@
-import { UserContext } from "@/context/userContext";
 import { Avatar, Card, CardBody, CardHeader, Container, Flex, Text } from "@chakra-ui/react";
-import { useContext } from "react";
 
 
 export default function ProfileBox({ userData = {} } = {}) {
-    const initialName = userData?.name
-        ?.split(" ")
-        .reduce((acc, s) => acc + s[0], "")
-        .toUpperCase();
-
     return (
         <Card width='full' mb="2">
             <CardHeader>

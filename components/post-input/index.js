@@ -4,11 +4,6 @@ import { useContext, useState } from "react";
 
 
 export default function PostInput({ userData = {} } = {}) {
-    const initialName = userData?.name
-        ?.split(" ")
-        .reduce((acc, s) => acc + s[0], "")
-        .toUpperCase();
-
     const [postContent, setPostContent] = useState("")
 
     return (

@@ -33,7 +33,7 @@ export default function Notifications() {
                 <CardBody padding='2'>
                   <Flex dir='row'>
                     <Link href={'/profile/' + notif?.user?.id}>
-                      <Tag size='lg' colorScheme='red' borderRadius='full' mr={2}>
+                      <Tag size='lg' colorScheme='gray' borderRadius='full' mr={2}>
                         <Avatar
                           size='xs'
                           name={notif?.user?.name}

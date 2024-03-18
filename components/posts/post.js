@@ -16,15 +16,27 @@ import {
   MenuItem,
   MenuList,
   Text,
-  useToast
+  useToast,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
+  useDisclosure,
+  Grid,
+  GridItem,
+  Textarea,
 } from '@chakra-ui/react';
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import { BiDotsVerticalRounded, BiHeart, BiReply, BiSolidHeart } from 'react-icons/bi'
 import { format } from 'date-fns'
 import Link from 'next/link';
 import { useMutations } from '@/hooks/useMutation';
 import { useRouter } from 'next/router';
 import Cookies from 'js-cookie';
+import Replies from '../replies';
 
 export default function Post({ post = {} }) {
   const userData = useContext(UserContext)
@@ -54,7 +66,7 @@ export default function Post({ post = {} }) {
         duration: 2000,
         isClosable: true,
       })
-      console.log(response)
+      console.log('Post', response)
     } else {
       toast({
         title: `Success ${action} post`,
@@ -64,6 +76,38 @@ export default function Post({ post = {} }) {
       })
       post.is_like_post = !post.is_like_post;
     }
+  }
+
+  const [selectedPost, setSelectedPost] = useState({
+    id: 0,
+  })
+  const [replyInput, setReplyInput] = useState({
+    description: '',
+  })
+
+  const MODAL_TYPE_REPLY = 'REPLY';
+  const MODAL_TYPE_EDIT_POST = 'EDIT_POST';
+  const MODAL_TYPE_DELETE_POST = 'DELETE_POST';
+  const [modalType, setModalType] = useState('');
+
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const HandleOpenReplies = async (post) => {
+    setSelectedPost({
+      id: post?.id,
+    })
+    setModalType(MODAL_TYPE_REPLY)
+    console.log(modalType, selectedPost)
+    onOpen()
+  }
+
+  const HandleSubmitReply = async (post) => {
+    setSelectedPost({
+      id: post?.id,
+    })
+    setModalType(MODAL_TYPE_REPLY)
+    console.log(modalType, selectedPost)
+    onOpen()
   }
 
   return (
@@ -81,7 +125,7 @@ export default function Post({ post = {} }) {
                 <Heading size='sm'>{post?.user?.name} {post?.is_own_post ? "(You)" : ""}</Heading>
               </Link>
               <Text>{post?.user?.email}</Text>
-              <Text size='sm'>
+              <Text fontSize='xs'>
                 {format(post?.created_at, "E LLL d yyyy")}
                 {post?.created_at === post?.updated_at ? <Badge>Edited</Badge> : ''}
               </Text>
@@ -121,9 +165,81 @@ export default function Post({ post = {} }) {
         >
           {post?.likes_count} Like
         </Button>
-        <Button flex='1' variant='ghost' leftIcon={<BiReply />}>
+        <Button flex='1' variant='ghost' leftIcon={<BiReply />} onClick={() => { HandleOpenReplies(post) }}>
           {post?.replies_count} Reply
         </Button>
+
+        <Modal isCentered isOpen={isOpen} onClose={onClose}>
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>
+              {modalType === MODAL_TYPE_REPLY && "Replies Post"}
+              {modalType === MODAL_TYPE_EDIT_POST && "Edit Post"}
+              {modalType === MODAL_TYPE_DELETE_POST && "Delete Post"}
+            </ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
+              {
+                modalType === MODAL_TYPE_REPLY && (
+                  <>
+                    <Grid gap={2}>
+                      <GridItem>
+                        <Textarea
+                          value={replyInput?.description}
+                          onChange={(event) => setReplyInput({ ...replyInput, description: event.target.value })}
+                          placeholder='reply post ...'
+                        />
+                      </GridItem>
+                      <GridItem>
+                        <Button colorScheme='blue' onClick={() => { HandleSubmitReply(post) }} width='full'>Reply</Button>
+                      </GridItem>
+                    </Grid>
+
+                    <Replies postId={post?.id} />
+                  </>
+                )
+              }
+              {
+                modalType === MODAL_TYPE_EDIT_POST && (
+                  <Grid gap={2}>
+                    <GridItem>
+                      <Textarea
+                        value={replyInput?.description}
+                        onChange={(event) => setReplyInput({ ...replyInput, description: event.target.value })}
+                        placeholder='reply post ...'
+                      />
+                    </GridItem>
+                    <GridItem>
+                      <Button colorScheme='blue' onClick={() => { HandleOpenReplies(post) }} width='full'>reply</Button>
+                    </GridItem>
+                  </Grid>
+                )
+              }
+              {
+                modalType === MODAL_TYPE_DELETE_POST && (
+                  <Grid gap={2}>
+                    <GridItem>
+                      <Textarea
+                        value={replyInput?.description}
+                        onChange={(event) => setReplyInput({ ...replyInput, description: event.target.value })}
+                        placeholder='reply post ...'
+                      />
+                    </GridItem>
+                    <GridItem>
+                      <Button colorScheme='blue' onClick={() => { HandleOpenReplies(post) }} width='full'>reply</Button>
+                    </GridItem>
+                  </Grid>
+                )
+              }
+            </ModalBody>
+            {modalType === MODAL_TYPE_DELETE_POST && (
+              <ModalFooter>
+                <Button onClick={onClose}>Cancel</Button>
+                <Button colorScheme='blue' onClick={null}>Yes</Button>
+              </ModalFooter>
+            )}
+          </ModalContent>
+        </Modal>
       </CardFooter>
     </Card>
   );
@@ -169,3 +285,4 @@ export default function Post({ post = {} }) {
 //   ],
 //   "message": "Fetch posts success"
 // }
+
