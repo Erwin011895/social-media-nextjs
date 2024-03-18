@@ -1,6 +1,8 @@
 import { useQueries } from '@/hooks/useQueries';
 import {
+  Center,
   Spinner,
+  Text
 } from '@chakra-ui/react';
 import Cookies from 'js-cookie';
 import Reply from './reply';
@@ -20,10 +22,12 @@ export default function Replies({ postId = null }) {
   return (
     <>
       {
-        isLoading ? <Spinner /> :
-          data?.data?.map((reply) => (
-            <Reply reply={reply} key={reply?.id} />
-          ))
+        isLoading ? <Center> <Spinner /> </Center> :
+          data?.data?.length === 0 ?
+            <Text align='center' mt={2}>No Replies</Text> :
+            data?.data?.map((reply) => (
+              <Reply reply={reply} key={reply?.id} />
+            ))
       }
     </>
   );

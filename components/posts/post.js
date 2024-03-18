@@ -29,7 +29,7 @@ import {
   GridItem,
   Textarea,
 } from '@chakra-ui/react';
-import { useContext, useState } from 'react';
+import { useCallback, useContext, useState } from 'react';
 import { BiDotsVerticalRounded, BiHeart, BiReply, BiSolidHeart } from 'react-icons/bi'
 import { format } from 'date-fns'
 import Link from 'next/link';
@@ -45,9 +45,7 @@ export default function Post({ post = {} }) {
 
   const ToogleLike = async (post) => {
     const action = post.is_like_post ? 'unlikes' : 'likes';
-    const payload = {
-
-    }
+    const payload = {}
 
     // https://paace-f178cafcae7b.nevacloud.io/api/likes/post/1
     // https://paace-f178cafcae7b.nevacloud.io/api/unlikes/post/1
@@ -78,9 +76,6 @@ export default function Post({ post = {} }) {
     }
   }
 
-  const [selectedPost, setSelectedPost] = useState({
-    id: 0,
-  })
   const [replyInput, setReplyInput] = useState({
     description: '',
   })
@@ -93,21 +88,52 @@ export default function Post({ post = {} }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const HandleOpenReplies = async (post) => {
-    setSelectedPost({
-      id: post?.id,
-    })
     setModalType(MODAL_TYPE_REPLY)
-    console.log(modalType, selectedPost)
+    onOpen()
+  }
+
+  const HandleEditPost = async (post) => {
+    setModalType(MODAL_TYPE_EDIT_POST)
+    onOpen()
+  }
+
+  const HandleDeletePost = async (post) => {
+    setModalType(MODAL_TYPE_DELETE_POST)
     onOpen()
   }
 
   const HandleSubmitReply = async (post) => {
-    setSelectedPost({
-      id: post?.id,
+    console.log('post', post)
+    console.log('replyInput', replyInput)
+    const payload = {
+      description: replyInput.description
+    }
+
+    const response = await mutate({
+      url: `https://paace-f178cafcae7b.nevacloud.io/api/replies/post/${post.id}`,
+      payload,
+      headers: {
+        "Authorization": `Bearer ${Cookies.get('user_token')}`
+      }
     })
-    setModalType(MODAL_TYPE_REPLY)
-    console.log(modalType, selectedPost)
-    onOpen()
+
+    if (!response?.success) {
+      toast({
+        title: `Failed to reply post`,
+        status: "error",
+        duration: 2000,
+        isClosable: true,
+      })
+      console.log('Post', response)
+    } else {
+      toast({
+        title: `Success reply post`,
+        status: "success",
+        duration: 1000,
+        isClosable: true,
+      })
+    }
+
   }
 
   return (
@@ -135,8 +161,8 @@ export default function Post({ post = {} }) {
             <Menu>
               <MenuButton as={IconButton} icon={<BiDotsVerticalRounded />} background='transparent' />
               <MenuList>
-                <MenuItem onClick={() => HandleRoute('/profile')}>Edit</MenuItem>
-                <MenuItem onClick={() => HandleRoute('/notifications')} color={'red'}>Delete</MenuItem>
+                <MenuItem onClick={() => HandleEditPost(post)}>Edit</MenuItem>
+                <MenuItem onClick={() => HandleDeletePost(post)} color={'red'}>Delete</MenuItem>
               </MenuList>
             </Menu>
           )}
@@ -185,13 +211,18 @@ export default function Post({ post = {} }) {
                     <Grid gap={2}>
                       <GridItem>
                         <Textarea
+
                           value={replyInput?.description}
                           onChange={(event) => setReplyInput({ ...replyInput, description: event.target.value })}
                           placeholder='reply post ...'
                         />
                       </GridItem>
                       <GridItem>
-                        <Button colorScheme='blue' onClick={() => { HandleSubmitReply(post) }} width='full'>Reply</Button>
+                        <Button
+                          colorScheme='blue'
+                          isDisabled={replyInput.description === ''}
+                          onClick={() => { HandleSubmitReply(post) }}
+                          width='full'>Reply</Button>
                       </GridItem>
                     </Grid>
 
@@ -220,6 +251,7 @@ export default function Post({ post = {} }) {
                   <Grid gap={2}>
                     <GridItem>
                       <Textarea
+
                         value={replyInput?.description}
                         onChange={(event) => setReplyInput({ ...replyInput, description: event.target.value })}
                         placeholder='reply post ...'
