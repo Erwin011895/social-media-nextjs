@@ -4,6 +4,8 @@ import {
 } from '@chakra-ui/react';
 import Cookies from 'js-cookie';
 import Post from './post';
+import { UserContext } from '@/context/userContext';
+import { useContext } from 'react';
 
 export default function Posts({ type = 'all', userId = 0 }) {
   let url = `https://paace-f178cafcae7b.nevacloud.io/api/posts?type=all`

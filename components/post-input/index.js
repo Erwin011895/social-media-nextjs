@@ -1,6 +1,7 @@
 import { useMutations } from "@/hooks/useMutation";
 import { Button, Card, CardBody, FormControl, Textarea } from "@chakra-ui/react";
 import { useRouter } from "next/router";
+import { useState } from "react";
 
 export default function PostInput({ userData = {} } = {}) {
     const router = useRouter()
@@ -32,7 +33,7 @@ export default function PostInput({ userData = {} } = {}) {
             console.log('PostInput', response)
         } else {
             toast({
-                title: `Success post`,
+                title: `Success create post`,
                 status: "success",
                 duration: 1000,
                 isClosable: true,

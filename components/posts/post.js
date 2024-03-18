@@ -96,6 +96,9 @@ export default function Post({ post = {} }) {
 
   const HandleEditPost = async (post) => {
     setModalType(MODAL_TYPE_EDIT_POST)
+    setReplyInput({
+      description: post?.description
+    })
     onOpen()
   }
 
@@ -131,10 +134,78 @@ export default function Post({ post = {} }) {
       toast({
         title: `Success reply post`,
         status: "success",
-        duration: 1000,
+        duration: 2000,
         isClosable: true,
       })
       setIsFetchReply(true)
+    }
+  }
+
+  const HandleSubmitEditPost = async (post) => {
+    console.log('post', post)
+    console.log('desc', replyInput)
+    const payload = {
+      description: replyInput.description
+    }
+
+    const response = await mutate({
+      url: `https://paace-f178cafcae7b.nevacloud.io/api/post/update/${post.id}`,
+      payload,
+      headers: {
+        "Authorization": `Bearer ${Cookies.get('user_token')}`
+      },
+      method: "PATCH"
+    })
+
+    if (!response?.success) {
+      toast({
+        title: `Failed to edit post`,
+        status: "error",
+        duration: 2000,
+        isClosable: true,
+      })
+      console.log('Post', response)
+    } else {
+      toast({
+        title: `Success edit post`,
+        status: "success",
+        duration: 2000,
+        isClosable: true,
+      })
+      post.description = payload.description;
+      onClose()
+    }
+  }
+
+  const HandleSubmitDeletePost = async (post) => {
+    console.log('post', post)
+    const payload = {}
+
+    const response = await mutate({
+      url: `https://paace-f178cafcae7b.nevacloud.io/api/post/delete/${post.id}`,
+      payload,
+      headers: {
+        "Authorization": `Bearer ${Cookies.get('user_token')}`
+      },
+      method: "DELETE"
+    })
+
+    if (!response?.success) {
+      toast({
+        title: `Failed to delete post`,
+        status: "error",
+        duration: 2000,
+        isClosable: true,
+      })
+      console.log('Post', response)
+    } else {
+      toast({
+        title: `Success delete post`,
+        status: "success",
+        duration: 1000,
+        isClosable: true,
+      })
+      router.reload()
     }
   }
 
@@ -191,10 +262,10 @@ export default function Post({ post = {} }) {
           leftIcon={post?.is_like_post ? <BiSolidHeart color='red' /> : <BiHeart />}
           onClick={() => ToogleLike(post)}
         >
-          {post?.likes_count} Like
+          {post?.likes_count || '0'} Like
         </Button>
         <Button flex='1' variant='ghost' leftIcon={<BiReply />} onClick={() => { HandleOpenReplies(post) }}>
-          {post?.replies_count} Reply
+          {post?.replies_count || '0'} Reply
         </Button>
 
         <Modal isCentered isOpen={isOpen} onClose={onClose}>
@@ -239,11 +310,11 @@ export default function Post({ post = {} }) {
                       <Textarea
                         value={replyInput?.description}
                         onChange={(event) => setReplyInput({ ...replyInput, description: event.target.value })}
-                        placeholder='reply post ...'
+                        placeholder='description'
                       />
                     </GridItem>
                     <GridItem>
-                      <Button colorScheme='blue' onClick={() => { HandleOpenReplies(post) }} width='full'>reply</Button>
+                      <Button colorScheme='blue' onClick={() => { HandleSubmitEditPost(post) }} width='full'>Submit</Button>
                     </GridItem>
                   </Grid>
                 )
@@ -252,15 +323,7 @@ export default function Post({ post = {} }) {
                 modalType === MODAL_TYPE_DELETE_POST && (
                   <Grid gap={2}>
                     <GridItem>
-                      <Textarea
-
-                        value={replyInput?.description}
-                        onChange={(event) => setReplyInput({ ...replyInput, description: event.target.value })}
-                        placeholder='reply post ...'
-                      />
-                    </GridItem>
-                    <GridItem>
-                      <Button colorScheme='blue' onClick={() => { HandleOpenReplies(post) }} width='full'>reply</Button>
+                      <Text>Are you sure delete this post ?</Text>
                     </GridItem>
                   </Grid>
                 )
@@ -269,7 +332,7 @@ export default function Post({ post = {} }) {
             {modalType === MODAL_TYPE_DELETE_POST && (
               <ModalFooter>
                 <Button onClick={onClose}>Cancel</Button>
-                <Button colorScheme='blue' onClick={null}>Yes</Button>
+                <Button colorScheme='red' onClick={() => HandleSubmitDeletePost(post)}>Yes</Button>
               </ModalFooter>
             )}
           </ModalContent>
