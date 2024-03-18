@@ -78,6 +78,7 @@ export default function Post({ post = {} }) {
   }
 
   const [isFetchReply, setIsFetchReply] = useState(true)
+  const [replies, setReplies] = useState({})
   const [replyInput, setReplyInput] = useState({
     description: '',
   })
@@ -91,6 +92,7 @@ export default function Post({ post = {} }) {
 
   const HandleOpenReplies = async (post) => {
     setModalType(MODAL_TYPE_REPLY)
+    setReplies(<Replies postId={post?.id} />)
     onOpen()
   }
 
@@ -137,7 +139,9 @@ export default function Post({ post = {} }) {
         duration: 2000,
         isClosable: true,
       })
-      setIsFetchReply(true)
+      post.likes_count = post.likes_count + 1;
+      setReplies({})
+      HandleOpenReplies(post)
     }
   }
 
@@ -202,7 +206,7 @@ export default function Post({ post = {} }) {
       toast({
         title: `Success delete post`,
         status: "success",
-        duration: 1000,
+        duration: 2000,
         isClosable: true,
       })
       router.reload()
@@ -299,7 +303,7 @@ export default function Post({ post = {} }) {
                       </GridItem>
                     </Grid>
 
-                    <Replies postId={post?.id} isFetch={isFetchReply} setIsFetch={setIsFetchReply} />
+                    {replies}
                   </>
                 )
               }

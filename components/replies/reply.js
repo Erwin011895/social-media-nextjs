@@ -1,32 +1,77 @@
+import { useMutations } from '@/hooks/useMutation';
 import {
   Avatar,
+  Button,
   Card,
   CardBody,
   Flex,
   Tag,
   TagLabel,
   Text,
+  useToast,
 } from '@chakra-ui/react';
 import { format } from 'date-fns'
+import Cookies from 'js-cookie';
 import Link from 'next/link';
+import { BiHeart, BiSolidTrash } from 'react-icons/bi';
 
 export default function Reply({ reply = {} }) {
+  const { mutate } = useMutations()
+  const toast = useToast()
+  const HandleDeleteReply = async () => {
+    const payload = {}
+
+    const response = await mutate({
+      url: `https://paace-f178cafcae7b.nevacloud.io/api/replies/delete/${reply.id}`,
+      payload,
+      headers: {
+        "Authorization": `Bearer ${Cookies.get('user_token')}`
+      },
+      method: "DELETE"
+    })
+
+    if (!response?.success) {
+      toast({
+        title: `Failed to delete reply`,
+        status: "error",
+        duration: 2000,
+        isClosable: true,
+      })
+      console.log('Post', response)
+    } else {
+      toast({
+        title: `Success delete reply`,
+        status: "success",
+        duration: 2000,
+        isClosable: true,
+      })
+    }
+  }
 
   return (
     <Card width='full' mb={'2'} key={reply?.id}>
       <CardBody padding='2'>
         <Flex flexDir='column'>
-          <Link href={'/profile/' + (reply?.is_own_reply ? '' : reply?.user?.id)}>
-            <Tag size='lg' colorScheme='gray' borderRadius='full' mr={2}>
-              <Avatar
-                size='xs'
-                name={reply?.user?.name}
-                ml={-1}
-                mr={2}
-              />
-              <TagLabel>{reply?.user?.name} {reply?.is_own_reply && '(You)'}</TagLabel>
-            </Tag>
-          </Link>
+          <Flex flexDir='row' justifyContent='space-between'>
+            <Link href={'/profile/' + (reply?.is_own_reply ? '' : reply?.user?.id)}>
+              <Tag size='lg' colorScheme='gray' borderRadius='full' mr={2}>
+                <Avatar
+                  size='xs'
+                  name={reply?.user?.name}
+                  ml={-1}
+                  mr={2}
+                />
+                <TagLabel>{reply?.user?.name} {reply?.is_own_reply && '(You)'}</TagLabel>
+              </Tag>
+            </Link>
+            <Button
+              variant='ghost'
+              colorScheme='red'
+              onClick={() => HandleDeleteReply()}
+            >
+              <BiSolidTrash />
+            </Button>
+          </Flex>
           <Text fontSize='xs'>{format(reply?.created_at, "E LLL d yyyy")}</Text>
           <Text>{reply?.description}</Text>
         </Flex>
