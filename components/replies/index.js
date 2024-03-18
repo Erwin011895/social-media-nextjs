@@ -6,18 +6,24 @@ import {
 } from '@chakra-ui/react';
 import Cookies from 'js-cookie';
 import Reply from './reply';
+import { useEffect, useState } from 'react';
 
-export default function Replies({ postId = null }) {
+export default function Replies({ postId = null, isFetch = true, setIsFetch = null }) {
   if (postId === null) {
     return <></>
   }
 
-  const { data, isLoading, isError } = useQueries({
-    prefixUrl: `https://paace-f178cafcae7b.nevacloud.io/api/replies/post/${postId}`,
-    headers: {
-      "Authorization": `Bearer ${Cookies.get('user_token')}`
-    }
-  })
+  let data, isLoading, isError;
+  useEffect(() => {
+    ({ data, isLoading, isError } = useQueries({
+      prefixUrl: `https://paace-f178cafcae7b.nevacloud.io/api/replies/post/${postId}`,
+      headers: {
+        "Authorization": `Bearer ${Cookies.get('user_token')}`
+      }
+    }))
+
+    setIsFetch(false)
+  }, isFetch)
 
   return (
     <>

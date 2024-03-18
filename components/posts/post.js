@@ -42,6 +42,7 @@ export default function Post({ post = {} }) {
   const userData = useContext(UserContext)
   const { mutate } = useMutations();
   const toast = useToast()
+  const router = useRouter()
 
   const ToogleLike = async (post) => {
     const action = post.is_like_post ? 'unlikes' : 'likes';
@@ -76,6 +77,7 @@ export default function Post({ post = {} }) {
     }
   }
 
+  const [isFetchReply, setIsFetchReply] = useState(true)
   const [replyInput, setReplyInput] = useState({
     description: '',
   })
@@ -132,8 +134,8 @@ export default function Post({ post = {} }) {
         duration: 1000,
         isClosable: true,
       })
+      setIsFetchReply(true)
     }
-
   }
 
   return (
@@ -226,7 +228,7 @@ export default function Post({ post = {} }) {
                       </GridItem>
                     </Grid>
 
-                    <Replies postId={post?.id} />
+                    <Replies postId={post?.id} isFetch={isFetchReply} setIsFetch={setIsFetchReply} />
                   </>
                 )
               }
