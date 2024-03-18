@@ -5,9 +5,14 @@ import {
 import Cookies from 'js-cookie';
 import Post from './post';
 
-export default function Posts({ type = 'all' }) {
+export default function Posts({ type = 'all', userId = 0 }) {
+  let url = `https://paace-f178cafcae7b.nevacloud.io/api/posts?type=all`
+  if (type !== 'all' && userId > 0) {
+    url = `https://paace-f178cafcae7b.nevacloud.io/api/posts/${userId}`
+  }
+
   const { data, isLoading, isError } = useQueries({
-    prefixUrl: "https://paace-f178cafcae7b.nevacloud.io/api/posts?type=" + type,
+    prefixUrl: url,
     headers: {
       "Authorization": `Bearer ${Cookies.get('user_token')}`
     },
